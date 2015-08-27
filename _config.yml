@@ -1,0 +1,21 @@
+name: Jorge Silva's Blog
+description: Yet another programming blog
+meta_description: "Jorge Silva's personal blog on programming and software engineering"
+
+markdown: redcarpet
+highlighter: pygments
+logo: false
+paginate: 15
+baseurl: /
+domain_name: 'http://blog.hiphipjorge.com'
+google_analytics: 'UA-XXXXXXXX-X'
+
+# Details for the RSS feed generator
+url:            'hiphipjorge.com'
+author:         'Jorge Silva'
+
+sass:
+    style: :compressed
+
+# Bet backwards compatible with Ghost blog
+permalink: /:title/

@@ -1,0 +1,39 @@
+.post-excerpt p {
+    display:inline;
+}
+
+h1, h2, h3,
+h4, h5, h6 {
+    font-family: "freight-sans-pro", "Open Sans", sans-serif;
+}
+
+.main-nav a {
+    font-family: "freight-sans-pro", 'Open Sans', sans-serif;
+}
+
+.page-title {
+    font-family: "freight-sans-pro", "Open Sans", sans-serif;
+    /* JSJ Overwrite */
+    color: #333;
+    text-shadow: 0 0 2px rgba(0,0,100,0.3);
+}
+
+.post-meta {
+    font-family: "freight-sans-pro", "Open Sans", sans-serif;
+}
+
+.pagination {
+    font-family:"freight-sans-pro", "Open Sans", sans-serif;
+}
+
+.site-footer {
+    font-family: "freight-sans-pro", "Open Sans", sans-serif;
+}
+
+.no-cover.main-header {
+    background: #f5f8fa;
+    background: linear-gradient(#a1dba1, transparent), linear-gradient(90deg, #5ac4f0, transparent), linear-gradient(-90deg, #b7bbeb, transparent);
+    background-blend-mode: screen;
+}
+
+
