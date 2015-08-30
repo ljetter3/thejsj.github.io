@@ -1,38 +1,47 @@
-# Kasper
+# Jorge's Blog
 
-This is a port of Ghost's default theme [Casper](https://github.com/tryghost/casper) for Jekyll. 
-Feel free to fork, change, modify and re-use it.
+## Setup
 
-## How to use it
+1. Install Ruby, if necessary
 
-Simply clone this repository, and then run `jekyll serve` inside the directory.
+1. Install bundler:
 
-Kasper theme includes:
+```bash
+sudo gem install bundler
+```
 
-* Pagination
-* Rss
-* Google Analytics Tracking code
-* Code Syntax Highlight
-* Author's profile with picture
-* Disqus comments
+1. Install gems using bundler
 
-## Screenshots
+```bash
+bundle install
+```
 
-![index page](https://raw.github.com/rosario/kasper/master/assets/images/kasper-theme-index.png)
-![post page](https://raw.github.com/rosario/kasper/master/assets/images/kasper-theme-post.png)
+## Building Site
 
+After, you've setup bundler and jekyll, you can now build the site:
 
-## Thanks 
-Most of the work has been already done by the Ghost team, I've just ported Casper to Jekyll. 
-I've also added few things specific to Jekyll and some minor style changes.
+```bash
+bundle exec jekyll build
+```
 
-## Copyright & License
+Alternatively, you can start listening for changes in your files and serve your
+site on `localhost:4000`.
 
-Copyright (C) 2013 Ghost Foundation - Released under the MIT License.
+```bash
+bundle exec jekyll serve
+```
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+## Importing from Ghost
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+If you want to reimport the post from the Ghost database, you can run the 
+following command. This presume that you have a Ghost SQLite3 database named
+`Ghost.db`. This shouldn't really be necessary though, since posts have been
+imported and gone through significant changes.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+bundle exec ruby import.rb
+```
+
+## Credit
+
+Based on kasper, which is based on the original Ghost theme.

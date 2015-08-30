@@ -22,12 +22,12 @@ I'm trying to get away with not installing XCode. Let's see how that goes.
 
 After sublime text is installed, link the Sublime Text CLI to the `sublime` keyword:
 
-```
+```bash
 ln -s /Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl /usr/local/bin/sublime
 ```
 If you're still in Sublime Text 2, this will looks something like this: 
 
-```
+```bash
 ln -s /Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin/subl /usr/local/bin/sublime
 ```
 
@@ -37,7 +37,7 @@ You can also link it the the `subl` keyword, instead of `sublime`, but I prefer 
 
 This can be done as follows: 
 
-```
+```bash
 ln -s /Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl /usr/local/bin/subl
 ```
 
@@ -45,7 +45,7 @@ ln -s /Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl /usr/local
 
 Let's also show all hidden files:
 
-```
+```bash
 defaults write com.apple.finder AppleShowAllFiles TRUE
 ```
 
@@ -61,13 +61,13 @@ If you're using Homebrew and you're a developer, Homebrew is essential to instal
 
 Go ahead and do install it: 
 
-```
+```bash
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
 
 At some point, you'll get prompted to install the XCode command line tools. Go Ahead and do that. The output for that looks something like this:
 
-```
+```bash
 ==> Installing the Command Line Tools (expect a GUI popup):
 ==> /usr/bin/sudo /usr/bin/xcode-select --install
 xcode-select: note: install requested for command line developer tools
@@ -77,7 +77,7 @@ Press any key when the installation has completed.
 
 When that's finished, call the doctor!
 
-```
+```bash
 brew doctor
 ```
 
@@ -91,30 +91,29 @@ After Homebrew is installed, we can now install git with Homebrew.
 
 For that, you can just do: 
 
-```
+```bash
 brew install git
 ```
 
 After that's done, you can go ahead and configure git. Presupposing you're using GitHub, you can just go:
 
-```
+```bash
 git config --global user.name 'GITHUB_USERNAME' 
 git config --global user.email 'GITHUB_EMAIL'
 ```
 
 In my case, this was:
 
-```
+```bash
 git config --global user.name 'thejsj' 
 git config --global user.email 'jorge.silva@thejsj.com'
-
 ```
 
 #### 4. Install Node.js and essential npm packages
 
 Now that you have installed `brew`, installing node is pretty easy. 
 
-```
+```bash
 brew install nodejs
 ```
 
@@ -122,7 +121,7 @@ Keep in mind that this installs the latest version of node.js. If you want to sw
 
 After node.js is finished installing, you can now use npm to install packages globally. There are only a couple of packages that I'll install globally. 
 
-```
+```bash
 npm intall -g jshint coffee bower jsfmt
 ```
 
@@ -132,13 +131,13 @@ OSX already comes with Apache, so there's no need to install it. Rather than usi
 
 First, let's install `mysql` with `brew`.
 
-```
+```bash
 brew install mysql
 ```
 
 Then test it: 
 
-```
+```bash
 which mysql.server
 mysql.server start
 which mysql
@@ -149,7 +148,7 @@ Now, let's install PHP. OSX already comes with PHP, but it has an older version 
 
 If we try to install it directly, we get an error. 
 
-```
+```bash
 brew install php56
 Error: No available formula for php56
 Searching taps...
@@ -157,7 +156,7 @@ Searching taps...
 
 So let's setup a couple more taps and then install `php56`
 
-```
+```bash
 brew tap homebrew/dupes
 brew tap homebrew/versions
 brew tap homebrew/homebrew-php
@@ -170,27 +169,31 @@ After PHP 5.6 is installed, we still have to do a couple of things.
 
 First, open `/etc/apache2/http.conf` and change this line `#LoadModule php5_module libexec/apache2/libphp5.so` for this: 
 
-```
+```apache
 LoadModule php5_module /usr/local/opt/php56/libexec/apache2/libphp5.so
 ```
 
 This will force Apache to use PHP 5.6, instead of the default PHP. 
 
 Now, also include the following lines in your `~/.bash_profile`
-```
+
+```bash
 PATH="/usr/local/bin:$PATH"
 export PATH="$(brew --prefix homebrew/php/php56)/bin:$PATH"
 ```
+
 Finally, run these two lines in your terminal to have PHP 5.6 start automatically on startup:
-```
+
+```bash
 ln -sfv /usr/local/opt/php56/*.plist ~/Library/LaunchAgents
 launchctl load ~/Library/LaunchAgents/homebrew.mxcl.php56.plist
 ```
+
 The next step is changing the default user and base directory for apache. 
 
 In `/etc/apache2/httpd.conf`, change the user and group.
 
-```
+```apache
 #
 # If you wish httpd to run as a different user or group, you must run
 # httpd as root initially and it will switch.  
@@ -202,9 +205,10 @@ In `/etc/apache2/httpd.conf`, change the user and group.
 User jorgesilvajetter
 Group Staff
 ```
+
 After that, change the Document Root and permissions for the document root.
 
-```
+```apache
 #
 # DocumentRoot: The directory out of which you will serve your
 # documents. By default, all requests are taken from this directory, but
@@ -230,13 +234,13 @@ DocumentRoot "/Users/jorgesilvajetter/Sites"
 
 After that, restart apache: 
 
-```
+```bash
 sudo apachectl start
 ```
 
 In order to test this, go to `~/Sites` and `touch index.php` and add the following: 
 
-```
+```php
 <?php echo 'HELLO!'; ?>
 <?php phpinfo(); ?>
 ```

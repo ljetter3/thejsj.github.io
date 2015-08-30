@@ -11,7 +11,8 @@ Over the last couple of days, I've been writing a lot of ReQL ([RethinkDB's quer
 The main thing that tripped me up, again and again, was treating everything in the same way and trying to use all methods on any type of query result. 
 
 For example, if we had a table with cities and each document (city) contained a reference to its neighbor cities (and where they are in relation to that city) each document would look like this:
-```
+
+```javascript
 {
   'id': 'd9000734-078e-490b-bbfa-c11fb2f48322'
   'name': 'Mountain View',
@@ -23,23 +24,27 @@ For example, if we had a table with cities and each document (city) contained a 
    }
 }
 ```
+
 In we wanted to count how many `neighbors` this city has, you might think we could to the following:
 
-```
+```javascript
 r.db('test')
  .table('cities')
  .get('d9000734-078e-490b-bbfa-c11fb2f48322')('neighbors')
  .count()
 ```
+
 But that query throws an error: 
+
 ```
 RqlRuntimeError: Cannot convert OBJECT to SEQUENCE in:
 r.db("test").table("cities").get("d9000734-078e-490b-bbfa-c11fb2f48322")("neighbors").count()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ```
+
 Basically, we're using a method that's meant for sequences (arrays are sequences, for example) and not for objects. In order to solve that, we can convert the object into an array by using the `.coerceTo` method or we can get all the keys in that object using the `.keys` method:
 
-```
+```javascript
 r.db('test')
  .table('cities')
  .get('d9000734-078e-490b-bbfa-c11fb2f48322')
@@ -48,7 +53,8 @@ r.db('test')
  .coerceTo('array') 
  .count()
 ```
-```
+
+```javascript
 r.db('test')
  .table('cities')
  .get('d9000734-078e-490b-bbfa-c11fb2f48322')
@@ -65,7 +71,8 @@ These will both `3`, which is exactly what we want!
 Sometimes, when working with the results of a query, you might expect to be operating on a document's attribute, when in fact you're still referencing the collection of documents. This sounds a bit confusing, so let's look at an example.
 
 What do you expect will be the result of this query, given the document we had above?
-```
+
+```javascript
 r.db('test')
  .table('cities')
  .filter({ id: '0cc569bd-5a80-4683-abbd-eb83b8bf43aa' })
@@ -73,13 +80,14 @@ r.db('test')
  .keys()
  .count()
 ```
+
 Personally, I was expecting the result to be `3`, since there is only one document being filtered and I am selecting the `neighbors` attribute. 
 
 After thinking about it a bit more, it wouldn't make much sense for it to return `3`, since that wouldn't be desirable if we had multiple documents. Maybe, the results would be `[3]` since that's what would result from mapping every single document. Instead, we get `1`, which is the `.count` for the number of documents in the query. When we add `(neighbors)` to the filtered documents, ReQL is effectivly mapping every document to only have the `neighbors` attribute, but still returning the `.count` for the collection of documents.
 
 If we wanted to get `3`, we could do that two ways. We could just select the first document in the queried sequence by adding a `(0)` after `.filter`.
 
-```
+```javascript
 r.db('test')
  .table('cities')
  .filter({ id: '0cc569bd-5a80-4683-abbd-eb83b8bf43aa' })(0)
@@ -87,9 +95,10 @@ r.db('test')
  .keys()
  .count()
 ```
+
 We could also just use the `.get` method to get the document directly and just call `.count` on that document's 'neighbors' attribute.
 
-```
+```javascript
 r.db('test')
  .table('cities')
  .get('0cc569bd-5a80-4683-abbd-eb83b8bf43aa')
@@ -97,40 +106,44 @@ r.db('test')
  .keys()
  .count()
 ```
+
 Finally, if we wanted to return an array with the count for every document in a sequence of documents, we can just `.map` the results.
 
-```
+```javascript
 r.db('test').table('cities')
   .filter({ id:'d9000734-078e-490b-bbfa-c11fb2f48322' })
   .map(r.row('neighbors').keys().count())
 ```
+
 Again, it's all about keeping track of what you're actually modifying when calling a method function on a query result and being aware of the different data types in your database.
 
 ### 3. Using `.filter` instead of `.get` in Changefeeds
 
 When using `.changes`, it might make more sense to listen to changes on a document attribute by using the following query. 
 
-```
+```javascript
 r.db('test').table('cities')
   .get('d9000734-078e-490b-bbfa-c11fb2f48322')	
  	('neighbors')
   .changes()
 ```
+
 This throw an error. The solution is not very complicated though. Just `.filter` the documents instead of getting just one document.
 
-```
+```javascript
 r.db('test').table('cities')
   .filter({ id: 'd9000734-078e-490b-bbfa-c11fb2f48322' })
 	('neighbors')
   .changes()
 ```
+
 At this point, this is only a feature that hasn't been implemented. This will probably change in an upcoming release of RethinkDB. Keep an eye out for this one!
 
 ### 4. Cursors in Changefeeds
 
 When querying the database using ReQL in Node.js, every time `.run` is called it executes a callback or returns a promise with the result ([you do know how to use promises, right?](/what-are-javascript-promises-and-how-can-i-use-them/)):
 
-```
+```javascript
 r.db('test')
  .table('cities')
  .get('0cc569bd-5a80-4683-abbd-eb83b8bf43aa')('bets')
@@ -139,8 +152,10 @@ r.db('test')
   // `result` is an Array of the query results
  });
 ```
+
 When I first started using changefeeds, I expected my promise to also return an array with my results.
-```
+
+```javascript
 // DON'T COPY THIS CODE
 r.db('test')
  .table('cities')
@@ -155,15 +170,18 @@ r.db('test')
  });
  // DON'T COPY THIS CODE
 ```
+
 Instead, I got this error:
+
 ```
 err [TypeError: Object [object Feed] has no method 'forEach']
 ```
+
 After reading the documentation more closely I found that my promise actually returns a cursor and not an array. (What exactly is a [cursor](http://en.wikipedia.org/wiki/Cursor_%28databases%29)? Basically, It is a way to navigate the results of query lazily.)
 
 When the promise is resolved and the cursor is fulfilled, the promise doesn't run again. Instead, a callback is executed every-time a new change comes in. 
 
-```
+```javascript
 r.db('test')
  .table('cities')
  .filter({ id: '0cc569bd-5a80-4683-abbd-eb83b8bf43aa' })
@@ -185,29 +203,31 @@ r.db('test')
 
 Some ReQL methods, such as `.map` and `.reduce`, take functions as arguments. For example, you can call `.map` to map documents: 
 
-```
+```javascript
 r.db('test')
  .table('cities')
  .map(function (row) {
   return row('population');
  });
 ```
+
 First, notice that I am not using object notation (`['population']`). I'm basically calling a function on the row variable which then returns the `population` attribute.
 
 After noticing that this is (kinda-like) JavaScript code inside the function, you might be tempted to do something like this:
 
-```
+```javascript
  // DO NOT COPY THIS CODE
  ...
  .map(function (row) {
   return row('population') * 2;
  });
 ```
+
 This throws an error (`TypeError: Illegal non-finite number 'NaN'.`). The reasons that it throws an error is that this operation will not be executed by JavaScript. This `.map` function is executed on the server. The `.map` function converts this code (and the complete query) into a string that is sent to and executed by the database. 
 
 Hence, in order to multiply the result of row, we would need to use ReQL: 
 
-```
+```javascript
  ...
  .map(function (row) {
   return row('population').mul(2);

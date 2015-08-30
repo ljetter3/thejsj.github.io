@@ -19,8 +19,9 @@ If you can actually even understand what this plugin this, you're probably a dev
 
 The plugin is based on the fact that you can style your  `console.log` using a `%c` at the beginning of your string and adding a second argument with some CSS styling. 
 
-The following statement
-```
+The following statement:
+
+```javascript
 console.log('%cHello World', 'color: green; font-weight: bold;');
 ```
 is rendered by the console as follows
@@ -28,7 +29,7 @@ is rendered by the console as follows
 
 My plugin plugin basically does this: 
 
-```
+```javascript
 // Save a reference to the original console.log
 window.log = window.console.log.bind(console);
 
@@ -43,7 +44,7 @@ Obviously, there's a way to fix this. You can just type `console.log('jorge is a
 
 The other intersting part of the code is how to include this code snippet in every tab (the `console.log` is re-written in every tab). That's done by convert the code into a string and appending a `<script>` tag into the page. 
 
-```
+```javascript
 var elt = document.createElement("script");
 elt.innerHTML = getFunction.toString() + '; startEvilConsole();';
 document.head.appendChild(elt);

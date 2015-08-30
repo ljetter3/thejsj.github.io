@@ -15,14 +15,15 @@ In this blog post, I'll show you how to add a node to a cluster after the node h
 ### Starting the cluster
 
 The first thing we're going to do is start a new cluster with two nodes. We'll run all these nodes locally, but the mechanics of this wouldn't change for nodes in different hosts. Here, we'll start two nodes listening for intra cluster traffic on ports 4000 and 4001, listening for http traffic to the web admin on ports 5000 and 5001, listening for driver traffic on ports 6000 and 6001, and with server names "server_1" and "server_2". 
+
+```bash
+rethinkdb -d ./server_1 --server-name server_1 --cluster-port 4000 --http-port 5000 --driver-port 6000
 ```
-$ rethinkdb -d ./server_1 --server-name server_1 --cluster-port 4000 --http-port 5000 --driver-port 6000
-```
+
 After starting "`server_1`", we join it to "`server_2`" by passing the intra cluster address of "`server_1`" via the `--join` opt arg.
 
-```
-$ rethinkdb -d ./server-2 --server-name server_2 --cluster-port 4001 --http-port 5001 --driver-port 6001 --join localhost:4000
-    
+```bash
+rethinkdb -d ./server-2 --server-name server_2 --cluster-port 4001 --http-port 5001 --driver-port 6001 --join localhost:4000
 ```
 
 After executing these two commands, you can go to `http://localhost:5000#servers` where you will see that both nodes ("`server_1`, and `server_2`) are now connected. 
@@ -35,8 +36,8 @@ If you go to `http://localhost:5001#servers` (`server_2`'s web admin port), you 
 
 Now, we are going to add a new node that will not be initially joined to the cluster. We'll call this server "`server_3`" and we'll have it listen in ports 4002, 5002, and 6002. 
 
-```
-$ rethinkdb -d ./server_3 --server-name server_3 --cluster-port 4002 --http-port 5002 --driver-port 6002
+```bash
+rethinkdb -d ./server_3 --server-name server_3 --cluster-port 4002 --http-port 5002 --driver-port 6002
 ```
 
 ![](/assets/images/2015/07/server_3-starting.png)
@@ -51,9 +52,10 @@ It's important to understand that, because we didn't pass a `--join` opt-arg to 
 
 After adding the new node, we now need to start another proxy node to join the new node to the cluster. We'll do this by passing two `--join` opt-args for the cluster's intracluster port and the new node's intracluster port.
 
+```bash
+rethinkdb proxy --server-name proxy_server --join localhost:4000 --join localhost:4002 --cluster-port 4003 --http-port 5003 --driver-port 6003
 ```
-$ rethinkdb proxy --server-name proxy_server --join localhost:4000 --join localhost:4002 --cluster-port 4003 --http-port 5003 --driver-port 6003
-```
+
 After running this command, we can go the web UI and see that our new node is now connected to the rest of the cluster. 
 
 ![](/assets/images/2015/07/connected-nodes.png)
@@ -64,7 +66,7 @@ The only problem is that now, the UI is telling us there's an issue in our datab
 
 The problem is that in both, our new node and our cluster, there was a database named "test", so now there are two databases name "test", which produces a name conflict. We can resolve these issues in the UI, by just renaming one of the databases. We can also resolve this issue using ReQL. In this case, we can use the following query to rename both "test" databases into "test_UUID-FRAGMENT"
 
-```
+```javascript
 r.db('rethinkdb').table('current_issues')
   .filter({ type: 'db_name_collision' })
   .concatMap(function (row) {

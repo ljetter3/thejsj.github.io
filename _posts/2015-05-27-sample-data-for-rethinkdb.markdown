@@ -9,7 +9,7 @@ Often times, people who are new to RethinkDB want to play around with the databa
 
 Now, anyone can (without cloning the repo) go ahead and run this command in their data explorer and instantly have some data to play with: 
 
-```
+```javascript
 r.tableCreate('countries')
 r.table('countries')
  .insert(r.json(r.http('https://raw.githubusercontent.com/thejsj/sample-data/master/data/countries.json')))

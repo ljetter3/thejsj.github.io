@@ -25,35 +25,41 @@ Recently, after using some MVCs like Django, I’ve started try to MVCfy WordPre
 
 For example, compare this:
 
-```
-$post = get_post(get_the_ID())
-$post_thumbnail_id = get_post_thumbnail_id( get_the_ID() );
-$post_thumbnail_url = wp_get_attachment_url($post_thumbnail_id); 
-$permalink = get_permalink( get_the_ID() );
-$custom_meta_1 = get_post_meta(get_the_ID(), 'custom_meta_1'); // Array
-$custom_meta_2 = get_post_meta(get_the_ID(), 'custom_meta_2'); // String
-echo $post->post_title;
-echo '<img src="' . $post_thumbnail_url . '">';
-echo '<a href="' . $permalink . '">';
-echo 'Field #1: ' . $custom_meta_1[0];
-echo 'Field #2: ' . $custom_meta_2->property;
+```php
+<?php
+  $post = get_post(get_the_ID())
+  $post_thumbnail_id = get_post_thumbnail_id( get_the_ID() );
+  $post_thumbnail_url = wp_get_attachment_url($post_thumbnail_id); 
+  $permalink = get_permalink( get_the_ID() );
+  // Array
+  $custom_meta_1 = get_post_meta(get_the_ID(), 'custom_meta_1');
+  // String
+  $custom_meta_2 = get_post_meta(get_the_ID(), 'custom_meta_2');
+  echo $post->post_title;
+  echo '<img src="' . $post_thumbnail_url . '">';
+  echo '<a href="' . $permalink . '">';
+  echo 'Field #1: ' . $custom_meta_1[0];
+  echo 'Field #2: ' . $custom_meta_2->property;
+?>
 ```
 
 With this:
 
-```
-$post = new Post(get_the_ID());
-echo $post->post_title;
-echo '<img src="' . $post->featured_image->url . '">';
-echo '<a href="' . $post->permalink . '">';
-echo 'Field #1: ' . $post->fields['custom_meta_1'][0];
-echo 'Field #2: ' . $post->fields['custom_meta_2']->property;
+```php
+<?php
+  $post = new Post(get_the_ID());
+  echo $post->post_title;
+  echo '<img src="' . $post->featured_image->url . '">';
+  echo '<a href="' . $post->permalink . '">';
+  echo 'Field #1: ' . $post->fields['custom_meta_1'][0];
+  echo 'Field #2: ' . $post->fields['custom_meta_2']->property;
+?>
 ```
 Not only is the second one much shorter and easier to write, but it’s more readable and more consistent. By creating classes, you can create your own API that is consistent through out the whole site. This keeps your code DRY and makes it easier to read. It also makes your code easier to maintain and extend, since every time you need to make a change, you only have to make it once.
 
 How does this `Post` model look like and how can I extend it? These models are declared as PHP Classes and they usually extend a `Single` class which does most of the work of getting and `$id` or `$object` and turning that into it’s own extended post object. To declare your model/PHP class, you only need to do this:
 
-```
+```php
 <?php
 class Post extends Single {
          // Custom Meta Tags will get queried 
@@ -82,7 +88,7 @@ Now that you have your models setup, you can go on to your views. These can be v
 
 For a simple post page, this would look something like this:
 
-```
+```php
 <?php 
  class PostView extends View {
      const NAME = 'PostView';
@@ -94,7 +100,7 @@ For a simple post page, this would look something like this:
 ```
 Basically, you just create a post object using your $post_id and you’re done. For querying a page with multiple posts (all posts with custom post type `image-post` in this case), your view might look something like this:
 
-```
+```php
 <?php 
  class ImagePostArchiveView extends ArchiveView {
      const NAME = 'ImagePostArchiveView';
@@ -111,7 +117,7 @@ This uses a `get_posts` function declared in the `View` class where you can pass
 
 Now we’re only missing our template. This is by far the best part, because our template will be short, clean, and will only have our HTML. In `archive-image-post` we use the following code:
 
-```
+```php
     <?php $view = new ImagePostArchiveView(); ?>
     <?php get_header(); ?>
       <?php foreach($view->posts as $post): ?>

@@ -19,3 +19,5 @@ sass:
 
 # Bet backwards compatible with Ghost blog
 permalink: /:title/
+
+paginate_path: /page/:num

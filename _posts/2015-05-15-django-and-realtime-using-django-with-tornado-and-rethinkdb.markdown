@@ -18,10 +18,14 @@ In the app, the user has to login (done with Django authentication) and can then
 
 Because our chat app will work as a single page application, we'll start by creating the `index.html` file that will server as our only view. We'll create this `index.html` [as a template](https://github.com/thejsj/django-and-rethinkdb/blob/master/django_and_rethinkdb/templates/index.html) inside our main Django app. We'll show our chat messages if the user is authenticated and show a login/signup form if the user is not:
 
-```
+```html
+  {% raw  %}
+  {% if user.is_authenticated %}
   <!-- Omitted -->
     <div ui-view id='container' class='messages'></div>
   <!-- Omitted -->
+  {% endif %}
+  {% if not user.is_authenticated %}
   <!-- Omitted -->
     <form action="/auth/login/" method="post">
       <!-- Omitted -->
@@ -30,18 +34,20 @@ Because our chat app will work as a single page application, we'll start by crea
       <!-- Omitted -->
     </form>
   <!-- Omitted -->
+  {% endif %}
+  {% endraw %}
 ```
 
 For each form, we reference the appropriate view that will handle login and signup. After creating our template, we'll add a view to render it at the root of our app: 
 
-```
+```python
 def main(request):
     return render(request, 'index.html')
 ```
 
 We'll use Django authentication to login users. In our `views.py` file, we [set some basic views](https://github.com/thejsj/django-and-rethinkdb/blob/master/django_and_rethinkdb/views.py#L13-L35) to handle a user logging in and signing up. This is pretty standard Django logic.
 
-```
+```python
 def login(request):
     username = password = ''
     if request.POST:
@@ -75,7 +81,7 @@ Now is when things tart to diverge a little bit from the usual Django way of doi
 
 First, we'll create a file called [`tornado_main.py`](https://github.com/thejsj/django-and-rethinkdb/blob/master/django_and_rethinkdb/tornado_main.py) which will be our new main file to run our Django app. This file setups our Django app, then creates a tornado application, which then routes to our Django app and starts listening for traffic on a port.
 
-```
+```python
 import django.core.handlers.wsgi
 from django.conf import settings
 import tornado
@@ -97,12 +103,14 @@ def main():
 if __name__ == '__main__':
   main()
 ```
+
 Because we're routing our requests through Tornado, we can't use the usual `python manage.py runserver` for development. Instead, we call the `tornado_main.py` passing in our `PYTHONPATH` and our settings:
 
-```
+```bash
 export PYTHONPATH=.; 
 export DJANGO_SETTINGS_MODULE=django_and_rethinkdb.settings; python django_and_rethinkdb/tornado_main.py
 ```
+
 Our Django app is now working with Tornado:
 
 ![Django App With Tornado](/assets/images/2015/05/Screen-Shot-2015-05-15-at-1-42-51-PM.png)
@@ -115,7 +123,7 @@ It's important to understand why were using Tornado to handle web socket connect
 
 The first thing we do to add these socket connection is add a socket handler at [`/new-messages`](https://github.com/thejsj/django-and-rethinkdb/blob/master/django_and_rethinkdb/tornado_main.py#L28):
 
-```
+```python
 from change_feed import SocketHandler
 
   # ...
@@ -128,7 +136,7 @@ from change_feed import SocketHandler
 
 Then, in another file called `change_feeds.py`, we create `SocketHandler` class, which inherits from `tornado.websocket.WebSocketHandler`. This class will have three methods: `open` (when a connection is opened), `on_close` (when a connection is closed), and `on_message` (when a message is sent from the client to the server). 
 
-```
+```python
 clients = []
 
 class SocketHandler(tornado.websocket.WebSocketHandler):
@@ -153,7 +161,7 @@ When we get a new client connection, we store it in our client array and then de
 
 When we get a new message, we're going to store that message in [RethinkDB](rethinkdb.com). RethinkDB is NoSQL database made for realtime apps. It can listen to changes in your database and notify you about those changes. It also comes with [Tornado integration](http://rethinkdb.com/api/python/set_loop_type/), so we can query the database without blocking. In order to implement this we're going to import RethinkDB, set the loop type to `"tornado"`, convert our `on_message` method into a Tornado coroutine, and then insert our messages asynchronously using `yield`.
 
-```
+```python
 import rethinkdb as r
 import json
 
@@ -179,7 +187,7 @@ Now that we're adding messages through our socket connection, we have to start l
 
 In `tornado_main.py`, we add: 
 
-```
+```python
 from change_feed import print_changes, SocketHandler
 
 def main():
@@ -187,9 +195,10 @@ def main():
  tornado.ioloop.IOLoop.current().add_callback(print_changes)
   tornado.ioloop.IOLoop.instance().start()
 ```
+
 Then, in our `change_feeds.py`, we add our `print_changes` function.
 
-```
+```python
 @tornado.gen.coroutine
 def print_changes():
     conn = yield r.connect(host="localhost", port=28015)

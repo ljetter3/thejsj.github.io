@@ -17,7 +17,7 @@ All this might seem a little abstract, so let's take a look at what it actually 
 
 In this query, we get all the users with the name 'jorge' are queried and then ordered in descending order by age.
 
-```
+```sql
 SELECT * FROM users WHERE name = 'jorge' ORDER BY age;
 ```
 
@@ -34,7 +34,7 @@ Now, can you tell from the query if the users are filtered or ordered first? Yes
 
 There is a problem with this. Having an explicit order of execution lets the user write queries that are not performant. Let's say the query was inveresed:
 
-```
+```javascript
 r.table('users')
  .orderBy(r.desc('age'))
  .filter({ name: 'jorge' })
@@ -46,13 +46,13 @@ This query first orders all the documents and then filters all documents with th
 
 Let's say we had exactly the same query we had before: 
 
-```
+```sql
 SELECT * FROM users WHERE name = 'jorge' ORDER BY age;
 ```
 
 Can we rewrite this query in a way that will make it more efficient? Do we know if this query is using any indexes under the hood? No, not really. If we want to make this query faster, we'd need to go into the database and see if this query is using any indexes. We can do that by running the following command in our 'users' table and see what indexes the table has.
 
-```
+```sql
 SHOW INDEXES IN users;
 ```
 

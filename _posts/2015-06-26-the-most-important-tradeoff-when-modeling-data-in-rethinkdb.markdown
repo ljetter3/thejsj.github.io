@@ -47,7 +47,7 @@ The integers in our relationships table refer to the `id`s of the rows in our fa
 
 In MongoDB, you can store JSON documents. The interesting part about this is that you can basically store any document inside another document through an object or through an array. In theory, you could store the whole database in a single document (which is terrible idea, but theoretically possible). Because of MongoDB's lack of support for joins and the incredible flexibility of JSON documents, there's an incentive to store everything in the same document through subdocuments. This would look something like this:
 
-```
+```javascript
 {
   "id": 1,
   "name": "Darth", 
@@ -68,7 +68,7 @@ You could also save the ids in an array and join these documents together, but, 
 
 This would look something like this:
 
-```
+```json
 {
   "id": 1,
   "name": "Darth", 
@@ -98,7 +98,7 @@ How you're querying your data is one of the biggest things to consider when deci
 
 For example, if I have a collection of states and cities and every time I look up a city, I also lookup the city it belongs to, it's more efficient to store the city inside of the state as a subdocument.
 
-```
+```javascript
 { 
   "id": 1, 
   "name": "California",
@@ -115,9 +115,10 @@ For example, if I have a collection of states and cities and every time I look u
   ]
 } 
 ```
+
 If, on the other hand, I often write queries for all the cities and I don't really need the state of that city, it's probably better to keep both city and state separated in two different tables.
 
-```
+```javascript
 // States
 { 
   "id": 1, 

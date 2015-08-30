@@ -9,4 +9,4 @@ Here's a presentation I gave out today on PHP and why I'm not the biggest fans. 
 
 <hr>
 
-I wrote PHP for many years (and even wrote ![some popular WordPress plugins](http://wordpress.org/plugins/jsj-gallery-slideshow/)) and these are some of the things that bothered me most about it. This is, by no means, an exhaustive list. Rather it's the kind of thing that you run into on a daily basis.
+I wrote PHP for many years (and even wrote [some popular WordPress plugins](http://wordpress.org/plugins/jsj-gallery-slideshow/)) and these are some of the things that bothered me most about it. This is, by no means, an exhaustive list. Rather it's the kind of thing that you run into on a daily basis.

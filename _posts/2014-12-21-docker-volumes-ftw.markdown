@@ -14,7 +14,8 @@ In Docker, if you set up a volume, you can access it's contents by getting the v
 I ended up using `volumes` to mount directories from my host system into my containers. I didn't really know this was possible until I found this in the Docker documentation the other day. Basically, I changed my `.gitignore` to exclude my database and images and added directories in my project directory for each of them. Once I did that, I mounted my directories into my volume through my fig file (you are using [fig](http://fig.sh), right?).
 
 Here's how that looks:
-```
+
+```yaml
 ghost:
   build: .
   volumes:
@@ -30,7 +31,7 @@ This approach has some drawbacks (I'll talk about those later) but it's simple t
 
 I use Fabric to deploy, push, pull and sync my local and remote. Here's how that looks:
 
-```
+```python
 from fabric.api import *
 from fabric.colors import green, red
 import datetime

@@ -5,6 +5,8 @@ date: 2015-01-22 14:45:16.000000000 -08:00
 ---
 
 For my recent project [CodeFriends](http://codefriends.io), me and my teammates wrote an integration testing suite for our API. In the last couple of days, I've thought a lot about the pros and cons of this approach and thought I'd share them here. This is not a definitive guide on the subject, but rather a real world case study for people who might not be using any testing right now or want have only done unit testing.
+
+<!-- more -->
  
 ## What We Did
 
@@ -17,7 +19,7 @@ These screenshots show our 39 tests. Every single one of these tests makes at le
 
 For writing these tests, we used [supertest-as-promised](https://www.npmjs.com/package/supertest-as-promised). It's a thin wrapper over [supertest](https://github.com/tj/supertest), which basically makes our http requests, keeps our session open and makes some basic assertions about it. In this next example, a project is created using a POST request. Then we execute a GET request to get the object and `expect` checks to see if all the necessary properties are there. 
 
-```
+```javascript
 it('should create a new project on POST /project', function (done) {
     agent
       .post('/api/project')
@@ -44,6 +46,7 @@ it('should create a new project on POST /project', function (done) {
       });
   });
 ```
+
 It might seem a little weird that we're doing this, but at the beginning of this project our API routes were pretty thin. This `POST /api/project` route, for example, [is only about 20 lines of code](https://github.com/code-friends/CodeFriends/blob/master/server/project/projectController.js#L29-L52)! At the time, it seemed like a bit of overkill to write unit tests for it.
  
 ## Was this a good approach?

@@ -16,6 +16,7 @@ To be honest, I became a little obsessed with turning my solution to N Queens (w
 [View](http://thejsj.com/2014/n-queens/)
 
 ### Watchout: A D3 Game With Sound!
+
 ![Watchout: A D3 Game](/assets/images/2014/12/Watchout-2.png)
 
 For our D3 sprint, we implemented a game called watchout. Thanks to my partner catherine, we had the best looking game in our cohort!

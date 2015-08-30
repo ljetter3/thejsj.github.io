@@ -13,7 +13,7 @@ Here's what it looks like:
 
 Here's how to get it running:
 
-```
+```bash
 // Install and run RethinkDB -> rethinkdb.com/docs/install/
 git clone https://github.com/thejsj/realtime-photo-tutorial.git
 cd realtime-photo-tutorial
@@ -62,7 +62,8 @@ The first thing we're going to do is setup the HTML file with some divs and link
 [*See on GitHub*](https://github.com/thejsj/realtime-photo-tutorial/blob/master/client/drag-and-drop.js)
 
 After setting up the initial HTML file, we'll add a listener on the `dropzone` div to listen for when files have been dropped into the div.
-```
+
+```javascript
 var el = document.getElementById('dropzone');
 
 el.addEventListener('drop', function(evt) {
@@ -79,11 +80,12 @@ el.addEventListener('dragover', function (evt) {
   evt.dataTransfer.dropEffect = 'copy'; 
 });
 ```
+
 The event we're really interested in is the `drop` event. This event provides a `event.dataTransfer.files` array (well, technically a [FileList](https://developer.mozilla.org/en-US/docs/Web/API/FileList)) that we can use to access the files that have been dropped in by the user.
 
 Inside the listener, we'll take the first file of `evt.dataTransfer.files` and append it to our `FormData` object through a `file` attribute. Then, we append the `fileName` and the `type` to our `FormData` object and send that object to `http://localhost:8000/image` using an HTTP POST request. 
 
-```
+```javascript
 el.addEventListener("drop", function(evt) {
 
   // prevent default action (open as link for some elements)
@@ -119,7 +121,7 @@ Now it's time for the server to save the image.
 
 In our server, we have a route at `POST /image` that leads to our `imageCreate` function. If you don't know much about express.js routes and want to see how this is setup, check out [my index.js file](https://github.com/thejsj/realtime-photo-tutorial/blob/master/server/index.js) in the repository. Like any other endpoint, this function takes a request and a response as arguments.
 
-```
+```javascript
 var _ = require('lodash');
 var r = require('./db');
 var multiparty = require('multiparty');
@@ -131,9 +133,10 @@ var imageCreate = function (req, res) {
 
 module.exports = imageCreate;
 ```
+
 Because this endpoint is handling multipart form data, we need to parse the form. For this we'll use [multiparty](https://github.com/andrewrk/node-multiparty/), a really good `multipart/form-data` handler. Our function now looks like this:
 
-```
+```javascript
 var imageCreate = function (req, res) {
   var form = new multiparty.Form();
   form.parse(req, function (err, fields, files) {
@@ -141,9 +144,10 @@ var imageCreate = function (req, res) {
   });
 };
 ```
+
 The `parse` function provides us with two important variables: `fields` and `files`. We'll use these variables to get our form data and get our image. The `files` array provides us with a path we can use to read the file in our system.
 
-```
+```javascript
 var imageCreate = function (req, res) {
 
   var form = new multiparty.Form();
@@ -159,9 +163,10 @@ var imageCreate = function (req, res) {
   });
 };
 ```
+
 Once we have an `imageFilePath`, we use `fs` (file system) to read the file. The [`readFile`](https://nodejs.org/api/fs.html#fs_fs_readfile_filename_options_callback) function gives us back a [`Buffer`](https://nodejs.org/api/buffer.html). After reading the file from the file system, we'll convert that buffer into an [`r.binary`](http://rethinkdb.com/api/javascript/#binary) object. This `r.binary` method converts our buffer into something that can be stored in the database. After that, we just [`insert`](http://www.rethinkdb.com/api/python/insert/) the object into the `images` table. Finally, we pass on the `id` of our new document to the client as the HTTP response.
 
-```
+```javascript
 fs.readFile(imageFilePath, function (err, buffer) {
   image.file = r.binary(buffer);
   r
@@ -189,7 +194,7 @@ Here's how that works:
 
 In our server, we've created a [socket handler](https://github.com/thejsj/realtime-photo-tutorial/blob/master/server/socket-handler.js) to take care of our socket connections. It's connected to socket.io in our [server/index.js](https://github.com/thejsj/realtime-photo-tutorial/blob/master/server/index.js#L30). Whenever there's a new socket connection, this function will be called and handle the different emits to and from the client.
 
-```
+```javascript
 var r = require('./db');
 
 var socketHandler = function (io, socket) {
@@ -197,9 +202,10 @@ var socketHandler = function (io, socket) {
 };
 module.exports = socketHandler;
 ```
+
 The first thing we're going to do inside the socket handler is create a new connection to our RethinkDB database. Every changefeed needs its own connection to the database in order to work properly.
 
-```
+```javascript
 var socketHandler = function (io, socket) {
   r.getNewConnection()
     .then(function (conn) {
@@ -207,9 +213,10 @@ var socketHandler = function (io, socket) {
     });
 };
 ```
+
 After creating the new connection, we're going to query all documents in the `images` table and then listen to changes on that table. Our `.run` method will return a cursor to which we can then pass a callback. This callback will get fired every time there's a change in that query.
 
-```
+```javascript
 var socketHandler = function (io, socket) {
   r.getNewConnection()
     .then(function (conn) {
@@ -225,9 +232,10 @@ var socketHandler = function (io, socket) {
      });
 };
 ```
+
 Now that we are listening to changes in the `images` table, we need to specify what we're going to do once we get that change. In this case, we're going to confirm that the image hasn't been deleted and then emit a new event (with our image) through our socket connection.
 
-```
+```javascript
 r
   .table('images')
   .changes()
@@ -242,6 +250,7 @@ r
   });
 });
 ```
+
 Our server is now sending all newly created images to our client through our socket connection. The last thing we need to do now is display the images that we get from the client.
 
 ### 5. Client: Listening for new images and displaying images
@@ -250,17 +259,19 @@ Our server is now sending all newly created images to our client through our soc
 
 On our client side, we'll now create a new file called `socket-handler.js` which we already included in our HTML in step 1. In this file, we'll connect to our server through Socket.io and listen for new image updates. Our file starts off with this: 
 
-```
+```javascript
 var socket = io.connect('http://localhost:8000');
 
 socket.on('Image:update', function (image) {
  // ...
 });
 ```
+
 After setting the listener for `Image:update` ([See where this is triggered](https://github.com/thejsj/realtime-photo-tutorial/blob/master/server/socket-handler.js#L18)), we now have to read the image, convert it into a base64 string, add it to an `<img>` and then append it to the DOM. For converting the file into a base64 string, we'll use the [`FileReader`](https://developer.mozilla.org/en-US/docs/Web/API/FileReader) class and it's `readAsDataURL` method.
 
 When we first get the image file, the file is an [`ArrayBuffer`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer). ArrayBuffers are used to represent binary data in JavaScript. We then convert that `ArrayBuffer` into a `Blob`, which the browser can then read using the `FileReader`. The `readAsDataURL` will return a base64 string. We can use this string to create an `<img>`.
-```
+
+```javascript
 socket.on('Image:update', function (image) {
   var reader = new FileReader();
   reader.onload = function(e) {
@@ -270,6 +281,7 @@ socket.on('Image:update', function (image) {
   reader.readAsDataURL(new Blob([image.file]));
 });
 ```
+
 The reason we need to convert it to base64 is that the `<img>` tag can't read binary data directly. We need to convert it to something HTML can read. Base64 converts our binary data into a string, which we can then pass on to the `src` attribute of our image. The `readAsDataUrl` method reads our file asynchronously and provides us with a base64 string.
 
 ### Final thoughts

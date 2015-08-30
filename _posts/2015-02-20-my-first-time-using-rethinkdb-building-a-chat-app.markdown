@@ -13,7 +13,7 @@ This app could not be simpler. When the user enters the app, he will get prompte
 
 The interesting part about all this is that the database serves as main source of truth at all times. For example, when a message is created on the client-side, the server just adds it to the database:
 
-```
+```javascript
   // Insert new messages
   socket.on('message', function (data) {
     r.table('messages').insert({
@@ -23,9 +23,10 @@ The interesting part about all this is that the database serves as main source o
     }).run();
   });
 ```
+
 At the same time, the database is listening to changes on the messages table in order to push them to the client.
 
-```
+```javascript
   // Listen to new message being inserted
   r.table('messages').changes().run()
     .then(function(cursor) {
@@ -58,7 +59,7 @@ ReQL is incredibly cool, but ultimately, the experience of using it is not THAT 
 
 In ReQL I can query the database and have a promise (in JavaScript) that's fired when that query is done.
 
-```
+```javascript
 r.db('rethink_chat').table('messages')
   .filter(r.row('created').ge(1424457572100))
   .run(conn)
@@ -66,9 +67,10 @@ r.db('rethink_chat').table('messages')
     // This will fire then our query results comes back
   }):
 ```
+
 In RethinkDB, you can have exactly the same query and just add `.changes()` to it.
 
-```
+```javascript
 r.db('rethink_chat').table('messages')
   .filter(r.row('created').ge(1424457572100))
   .changes()
@@ -80,6 +82,7 @@ r.db('rethink_chat').table('messages')
     });
   }):
 ```
+
 This single function has the potential to totally change how realtime applications are built (Ok! I'm a little biased, I know). The feature prevents some of the common pitfalls of building realtime apps, where developers have to be either polling the database or writing complex abstractions to keep track of changing data.
 
 ##### Admin View: Why would I use this? Oh, wait. This is pretty awesome

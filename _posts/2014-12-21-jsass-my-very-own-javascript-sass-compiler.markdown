@@ -15,7 +15,7 @@ Let's be honest here. This is not fully-fledged Sass compiler, but it has the ba
 
 Nesting is probably the most useful feature in Sass. It lets you organize your code and prevent writing to many classes. It also makes maitenance easier. 
 
-```
+```scss
 .main {
  background: green;
  .side {
@@ -24,8 +24,10 @@ Nesting is probably the most useful feature in Sass. It lets you organize your c
  }
 }
 ```
+
 Compiles to:
-```
+
+```css
 .main {
   background: green; }
   .main .side {
@@ -38,7 +40,7 @@ Compiles to:
 
 Sass allows inline comments. These are not included in your compiled CSS. 
 
-```
+```scss
 // This is some comment on the .main class
 .main {
   display: none;
@@ -46,7 +48,7 @@ Sass allows inline comments. These are not included in your compiled CSS.
 ```
 Compiles to:
 
-```
+```css
 .main {
   display: none; }
 ```
@@ -55,7 +57,7 @@ Compiles to:
 
 Variables for your CSS. How could this not be useful?
 
-```
+```scss
 $color: purple;
 .main {
  background: $color;
@@ -67,7 +69,7 @@ $color: purple;
 ```
 compiles to:
 
-```
+```css
 .main {
   background: purple; }
   .main .side {

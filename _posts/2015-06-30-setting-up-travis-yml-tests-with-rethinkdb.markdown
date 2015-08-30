@@ -21,7 +21,7 @@ If you look at RethinkDB's documentation, you'll see that the instructions for i
 
 Fixing this is pretty simple. Just copy paste the commands posted on [the RethinkDB install page](http://rethinkdb.com/docs/install/ubuntu/) into your `.travis.yml` file.
 
-```
+```yaml
 before_install:
   - source /etc/lsb-release && echo "deb http://download.rethinkdb.com/apt $DISTRIB_CODENAME main" | sudo tee /etc/apt/sources.list.d/rethinkdb.list
   - wget -qO- http://download.rethinkdb.com/apt/pubkey.gpg | sudo apt-key add -

@@ -11,7 +11,7 @@ In this post, I'll go through part of it and try to explain how promises make th
 
 The first thin we'll need to do is `require` some modules. The most important one here is [bluebird](), which we require as `Promise`. The reason it's important is that it let us `require` other modules and 'promisify' them. This lets us interact with them as if they were promise compliant. After that, we layout our POST request handler.
 
-```
+```javascript
 var express = require('express');
 var Promise = require('bluebird');
 var Q = require('q');
@@ -34,7 +34,7 @@ After we promisified all our functions and have all the data/paths we need to pr
 
 In this first part, we start by creating a base promise using `Q()`. `Q()` ensures all our subsequenet `.then`s and `.catch`s run as promises. At the end of the promise chain, we make sure to return a 400 error if anything goes wrong. If an error is thrown by any of the promises, it will be caught by this last `.catch`.
 
-```
+```javascript
 Q().then(function () {
 
 // ... All my code ...
@@ -47,7 +47,7 @@ Q().then(function () {
 ```
 After this we make sure the data we have is correctly populated. We parse the data a bit to be able to move the temporary image or save base64 data to an image. Keep in mind that many of these variables are [already declared before the function was called](https://github.com/silver-octopus-labs/mlp/blob/master/server/routers/api/photoRouter.js#L26-L47). Once we parse the data correctly, we write or move the file to the correct path and return this as the result of this function. This is an asynchronous operations which returns a promise. If we don't have the data we need, we throw an error which will return a 400 HTTP response.
 
-```
+```javascript
 Q().then(function () {
   if (filePath !== null && filePath !== undefined) {
     filePath = path.resolve(filePath);
@@ -74,7 +74,7 @@ Q().then(function () {
 ```
 Now that our image file was saved, we can crop it. For this, we also promisify `imageMagick` in order for it to always return a promise. If the image is cropped succssefully, the promise chain will continue executing. If not, it will error out. 
 
-```
+```javascript
 .then(function () {
   return imageMagick.cropAsync({
     srcPath: newPath,
@@ -93,7 +93,7 @@ Now that our image file was saved, we can crop it. For this, we also promisify `
 ```
 When image is saved and cropped, the image is finally saved to the database with its filename. Keep in mind that the `userId`, `promptId`, and `newImageFileName` were declared at the top of our function. The `.save()` method also returns a promise (but you knew that already, right!).
 
-```
+```javascript
 }).then(function () {
   return new models.Photo({
       user_id: userId,
@@ -105,14 +105,14 @@ When image is saved and cropped, the image is finally saved to the database with
 ```
 Finally, if everything goes according to plan, we return a 200 HTTP response with the photo data in JSON format. `photo` is the model created after saving it to the database.
 
-```
+```javascript
 }).then(function (photo) {
   res.json(photo.toJSON());
 }).catch(function (err) {
 ```
 Here it is all together ([See it on Github](https://github.com/silver-octopus-labs/mlp/blob/master/server/routers/api/photoRouter.js)):
 
-```
+```javascript
 Q().then(function () {
   if (filePath !== null && filePath !== undefined) {
     filePath = path.resolve(filePath);

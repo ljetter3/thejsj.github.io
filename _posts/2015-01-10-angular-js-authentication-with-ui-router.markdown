@@ -11,7 +11,7 @@ Let's take a look at how this looks in our code:
 
 First, let's set up the views with their corresponding `resolve` methods:
 
-```
+```javascript
 .config(function ($stateProvider, $urlRouterProvider) {
       
       // ...
@@ -60,9 +60,10 @@ First, let's set up the views with their corresponding `resolve` methods:
         });
     })
 ```
-Notice how we haved specified passed the `authenticated` variable into `resolve.authenticated`. This will be a function which we'll write as follows: 
 
-```
+Notice how we have specified passed the `authenticated` variable into `resolve.authenticated`. This will be a function which we'll write as follows: 
+
+```javascript
 .config(function ($stateProvider, $urlRouterProvider) {
       $urlRouterProvider.otherwise('/');
       var authenticated = ['$q', 'Auth', function ($q, Auth) {
@@ -82,9 +83,10 @@ Notice how we haved specified passed the `authenticated` variable into `resolve.
         // ...
     })
 ```
+
 Our `authenticated` function is a promise. The server (through our `Auth` factory) responds with a boolean which tells us if the user is logged in or not. If the user is logged in, the promise is resolved and the controller is loaded. If ther user is not logged in, the promise is rejected. In order to handle this, we write a function that handles in errors in our routes. 
 
-```
+```javascript
 .config(function ($stateProvider, $urlRouterProvider) {
    
    // ...
@@ -97,6 +99,7 @@ Our `authenticated` function is a promise. The server (through our `Auth` factor
   });
 });
 ```
+
 And that's it! Server-side authentication with Angular.js. If you want to see the whole code, check out the code on [GitHub](https://github.com/code-friends/CodeFriends/blob/master/client/app/app.js#L23-L101).
 
 To all you Hack Reactor nerds out there, you should really see this [Quora post with old photos of Tony, Marcus, and Shawn](http://qr.ae/6S09G).
