@@ -4,7 +4,7 @@
 [ ] Setup ngnix conf
   [ ] http://jekyllrb.com/docs/permalinks/
 [ ] Write ABOUT page
-[ ] Add Google Analytics
+[x] Add Google Analytics
 [ ] Check JavaScript for blink
 [ ] Add README explaining command
   [x] bundle

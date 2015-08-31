@@ -8,7 +8,7 @@ logo: false
 paginate: 15
 baseurl: /
 domain_name: 'http://blog.hiphipjorge.com'
-google_analytics: 'UA-XXXXXXXX-X'
+google_analytics: 'UA-26664609-7'
 
 # Details for the RSS feed generator
 url:            'hiphipjorge.com'
