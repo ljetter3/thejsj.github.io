@@ -4,30 +4,30 @@
 
 h1, h2, h3,
 h4, h5, h6 {
-    font-family: "freight-sans-pro", "Open Sans", sans-serif;
+    font-family: "freight-sans-pro", "PT Serif", sans-serif;
 }
 
 .main-nav a {
-    font-family: "freight-sans-pro", 'Open Sans', sans-serif;
+    font-family: "freight-sans-pro", 'PT Serif', sans-serif;
 }
 
 .page-title {
-    font-family: "freight-sans-pro", "Open Sans", sans-serif;
+    font-family: "freight-sans-pro", "PT Serif", sans-serif;
     /* JSJ Overwrite */
     color: #333;
     text-shadow: 0 0 2px rgba(0,0,100,0.3);
 }
 
 .post-meta {
-    font-family: "freight-sans-pro", "Open Sans", sans-serif;
+    font-family: "freight-sans-pro", "PT Serif", sans-serif;
 }
 
 .pagination {
-    font-family:"freight-sans-pro", "Open Sans", sans-serif;
+    font-family:"freight-sans-pro", "PT Serif", sans-serif;
 }
 
 .site-footer {
-    font-family: "freight-sans-pro", "Open Sans", sans-serif;
+    font-family: "freight-sans-pro", "PT Serif", sans-serif;
 }
 
 .no-cover.main-header {
@@ -41,4 +41,42 @@ pre {
   font-size: 0.78em;
 }
 
+// Overwrite letter spacing
+.page-title {
+  letter-spacing: 0.4px;
+}
 
+h1, h2 {
+  letter-spacing: 0;
+}
+
+@media only screen and (max-width: 500px) {
+
+  h1, h2 {
+    letter-spacing: 0;
+  }
+
+}
+
+// Change default typeface
+body {
+    font-family: "PT Serif", serif;
+  font-size: 2.2rem;
+  line-height: 1.7em;
+}
+
+.author-profile .author-meta {
+    font-family: "PT Serif", serif;
+}
+
+.page-description {
+    font-family: "PT Serif", serif;
+}
+
+// Prevent Flash
+.home-template .page-title {
+  -webkit-animation: fade-in-down 1s;
+  animation: fade-in-down 1s;
+  -webkit-animation-delay: 0s;
+  animation-delay: 0s;
+}
