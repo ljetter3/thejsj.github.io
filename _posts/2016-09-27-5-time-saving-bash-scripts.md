@@ -136,6 +136,7 @@ done
 
 Whenever the deploy has finished, I get a success/failure notification. It’s a great small tool to use when you don’t want to continually switch tabs to check up on something.
 
-Conclusion
+### Conclusion
+
 The world of shell scripting is obviously huge and nearly never-ending. Every developer should constantly be improving. These are just some of my most recent findings. Hopefully, you’ll find them useful.
 
