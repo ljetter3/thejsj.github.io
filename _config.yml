@@ -3,7 +3,6 @@ description: Yet another programming blog
 meta_description: "Jorge Silva's personal blog on programming and software engineering"
 gems: [jekyll-paginate]
 
-markdown: redcarpet
 highlighter: pygments
 logo: false
 paginate: 15
