@@ -1,6 +1,11 @@
 ---
 layout: page
-title: About me 
+title: About me
+permalink: about.html
 ---
 
-This is a static page. It could be an 'about page' if you'd like.
+Software Engineer.
+
+[Github](http://github.com/thejsj)
+[Twitter](http://twitter.com/thejsj)
+[LinkedIn](https://www.linkedin.com/in/jorgesilvajetter)

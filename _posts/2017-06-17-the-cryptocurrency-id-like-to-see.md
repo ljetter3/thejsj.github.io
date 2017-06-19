@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Then Cryptocurrency I'd Like To See
-date: 2016-06-17 15:51:53.000000000 -07:00
+date: 2017-06-17 15:51:53.000000000 -07:00
 ---
 Disclaimer: Some of the factual statements in this article might be incorrect.
 
