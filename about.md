@@ -1,10 +1,12 @@
 ---
 layout: page
-title: About me
+title: About Jorgito
 permalink: about.html
 ---
 
-Software Engineer.
+![](/assets/images/profile-1.jpg)
+
+Hi, I'm Jorge and I'm Software Engineer.
 
 [Github](http://github.com/thejsj)
 [Twitter](http://twitter.com/thejsj)
