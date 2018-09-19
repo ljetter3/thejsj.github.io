@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Scatterplot</title>
+        <script type="text/javascript" src="./lib/d3.v3.min.js"></script>
+        <style type="text/css">
+
+            .axis path,
+            .axis line {
+                fill: none;
+                stroke: black;
+                shape-rendering: crispEdges;
+            }
+            .axis text {
+                font-family: sans-serif;
+                font-size: 11px;
+            }
+          </style>
+    </head>
+    <body>
+        <h1>Wins+Nominations vs. IMDb Rating</h1>
+        <script type="text/javascript">
+
+
+            //Gathering data from csv file
+            var dataset = [];
+            var dataset_crosses = [];
+            var dataset_circles = [];
+            d3.csv("./Q3/movies.csv", function(csv) {
+                csv.map(function(d) {
+                    dataset.push([+d.imdbRating,+d.WinsNoms,+d.IsGoodRating])
+                    if (+d.IsGoodRating == 1)
+                        dataset_crosses.push([+d.imdbRating,+d.WinsNoms,+d.IsGoodRating])
+                    else
+                        dataset_circles.push([+d.imdbRating,+d.WinsNoms,+d.IsGoodRating])
+
+
+                })
+
+            });
+
+            console.log(dataset_crosses);
+            console.log(dataset_circles);
+            console.log(dataset);
+
+            //Testing
+            var max = d3.max(dataset, function(d) {return d});
+            console.log(max);
+
+            //Width, height and padding
+            var w = 500;
+            var h = 300;
+            var padding = 40;
+
+            //Scaling
+            var xScale = d3.scale.linear()
+                                .domain([0, d3.max(dataset, function(d) { return d[0]; })])
+                                .range([padding, w - padding]);
+
+            var yScale = d3.scale.linear()
+                                .domain([0, d3.max(dataset, function(d) { return d[1]; })])
+                                .range([h - padding, padding]);
+
+            //X axis
+            var xAxis = d3.svg.axis()
+                                .scale(xScale)
+                                .orient("bottom")
+                                .ticks(5);
+
+            //Y axis
+            var yAxis = d3.svg.axis()
+                                .scale(yScale)
+                                .orient("left")
+                                .ticks(5);
+
+            //Create SVG element
+            var svg = d3.select("body")
+                            .append("svg")
+                            .attr("width", w)
+                            .attr("height", h);
+
+
+            //Create circle
+            svg.selectAll("circle")
+                       .data(dataset_circles)
+                       .enter()
+                       .append("cicle")
+                       .attr("cx", function(d) {return xScale(d[0]);})
+                       .attr("cy", function(d) {return ySacle(d[1]);})
+                       .attr("r", "10")
+                       .attr("fill", "red");
+
+            //Create Cross
+            svg.selectAll(".point")
+                       .data(dataset_crosses)
+                       .enter()
+                       .append("path")
+                       .attr("d", d3.svg.symbol().type("cross").size(10))
+                       .attr("fill", "blue")
+                       .attr("transform", function(d) { return "translate(" + xScale(d[0]) + "," + yScale(d[1]) + ")"; });
+
+            //Create X axis
+            svg.append("g")
+                        .attr("class", "axis")
+                        .attr("transform", "translate(0," + (h - padding) + ")")
+                        .call(xAxis);
+
+            //Create Y axis
+            svg.append("g")
+                        .attr("class", "axis")
+                        .attr("transform", "translate(" + padding + ",0)")
+                        .call(yAxis);
+
+        </script>
+    </body>
+</html>
